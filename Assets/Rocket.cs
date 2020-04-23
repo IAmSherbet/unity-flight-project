@@ -28,11 +28,11 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            print("Rotating left");
+            transform.Rotate(Vector3.forward); // transofmr is a method that Unity provides us
 
         } else if (Input.GetKey(KeyCode.D))
         {
-            print("Rotating right");
+            transform.Rotate(-Vector3.forward);
         }
     }
 }
