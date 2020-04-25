@@ -8,6 +8,9 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
 
+    [SerializeField] float rotationThrust = 100f;
+    [SerializeField] float mainThrust = 1750f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,28 +25,14 @@ public class Rocket : MonoBehaviour
         Rotate();
     }
 
-    private void Rotate()
-    {
-        rigidBody.freezeRotation = true; // take manual control of rotation, suspend physics
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.forward); // transform is a method that Unity provides us
-
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(-Vector3.forward);
-        }
-
-        rigidBody.freezeRotation = false; // resume physics control of rotation
-    }
-
     private void Thrust()
     {
+        float thrustThisFrame = mainThrust * Time.deltaTime;
+
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidBody.AddRelativeForce(Vector3.up); // Position of the ship is a vector three, three floating point numbers
+            rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame); // Position of the ship is a vector three, three floating point numbers
+
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();
@@ -53,5 +42,25 @@ public class Rocket : MonoBehaviour
         {
             audioSource.Stop();
         }
+    }
+
+    private void Rotate()
+    {
+        float rotationThisFrame = rotationThrust * Time.deltaTime;
+
+        rigidBody.freezeRotation = true; // take manual control of rotation, suspend physics
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            
+            transform.Rotate(Vector3.forward * rotationThisFrame); // transform is a method that Unity provides us
+
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
+        }
+
+        rigidBody.freezeRotation = false; // resume physics control of rotation
     }
 }
