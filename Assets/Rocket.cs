@@ -25,6 +25,11 @@ public class Rocket : MonoBehaviour
         Rotate();
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        print("Collided");
+    }
+
     private void Thrust()
     {
         float thrustThisFrame = mainThrust * Time.deltaTime;
