@@ -18,10 +18,28 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        Thrust();
+        Rotate();
     }
 
-    private void ProcessInput()
+    private void Rotate()
+    {
+        rigidBody.freezeRotation = true; // take manual control of rotation, suspend physics
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.Rotate(Vector3.forward); // transform is a method that Unity provides us
+
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.Rotate(-Vector3.forward);
+        }
+
+        rigidBody.freezeRotation = false; // resume physics control of rotation
+    }
+
+    private void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
@@ -30,18 +48,10 @@ public class Rocket : MonoBehaviour
             {
                 audioSource.Play();
             }
-        } else
+        }
+        else
         {
             audioSource.Stop();
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.forward); // transofmr is a method that Unity provides us
-
-        } else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(-Vector3.forward);
         }
     }
 }
