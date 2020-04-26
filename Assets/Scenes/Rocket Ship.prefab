@@ -256,6 +256,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationThrust: 200
   mainThrust: 1750
+  mainEngine: {fileID: 8300000, guid: 1d0cad6e116f1485293905a80a615acd, type: 3}
+  obstacleCollision: {fileID: 8300000, guid: 7062312cf729d45b7928cceaca450c4f, type: 3}
+  levelCompleted: {fileID: 8300000, guid: 5129adfe81c484a68b918142d5b096b4, type: 3}
 --- !u!1 &1195097866294982545
 GameObject:
   m_ObjectHideFlags: 0

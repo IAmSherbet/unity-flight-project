@@ -7,10 +7,13 @@ public class Rocket : MonoBehaviour
     AudioSource audioSource;
 
     enum State { Alive, Dying, Transcending };
-    State state = State.Alive;
+    State state = State.Alive; // use debug mode to expose this in Unity Inspector
 
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] float mainThrust = 1750f;
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip obstacleCollision;
+    [SerializeField] AudioClip levelCompleted;
 
     // Start is called before the first frame update
     void Start()
@@ -24,8 +27,8 @@ public class Rocket : MonoBehaviour
     {
         if (state == State.Alive)
         {
-            Thrust();
-            Rotate();
+            RespondToThrustInput();
+            RespondToRotateInput();
         }
     }
 
@@ -39,14 +42,28 @@ public class Rocket : MonoBehaviour
                 // do nothing
                 break;
             case "Finish":
-                state = State.Transcending;
-                Invoke("LoadNextScene", 1f);  // parameterise time
+                StartSuccessSequence();
                 break;
             default:
-                state = State.Dying;
-                Invoke("HandleDeath", 1f); // parameterise time
+                StartDeathSequence();
                 break;
         }
+    }
+
+    private void StartDeathSequence()
+    {
+        state = State.Dying;
+        audioSource.Stop();
+        audioSource.PlayOneShot(obstacleCollision);
+        Invoke("HandleDeath", 1f); // parameterise time
+    }
+
+    private void StartSuccessSequence()
+    {
+        state = State.Transcending;
+        audioSource.Stop();
+        audioSource.PlayOneShot(levelCompleted);
+        Invoke("LoadNextScene", 1f);  // parameterise time
     }
 
     private void HandleDeath()
@@ -59,18 +76,11 @@ public class Rocket : MonoBehaviour
         SceneManager.LoadScene(1); // todo: allow for more than 2 levels, 
     }
 
-    private void Thrust()
+    private void RespondToThrustInput()
     {
-        float thrustThisFrame = mainThrust * Time.deltaTime;
-
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame); // Position of the ship is a vector three, three floating point numbers
-
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
+            ApplyThrust();
         }
         else
         {
@@ -78,7 +88,18 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    private void Rotate()
+    private void ApplyThrust()
+    {
+        float thrustThisFrame = mainThrust * Time.deltaTime;
+        rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame); // Position of the ship is a vector three, three floating point numbers
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(mainEngine);
+        }
+    }
+
+    private void RespondToRotateInput()
     {
         float rotationThisFrame = rotationThrust * Time.deltaTime;
 
