@@ -21,7 +21,9 @@ public class Oscillator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // todo: protect against period = 0, which would result in 0/0 NotANumber error
+        // protect against period = 0 to prevent 0 dividing by 0
+        if (period <= Mathf.Epsilon) { return; } // Mathf.Epsilon = the smallest float possible to calculate
+
         float cycles = Time.time / period; // grows continually from zero
 
         const float tau = Mathf.PI * 2f; // about 6.28
