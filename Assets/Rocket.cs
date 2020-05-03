@@ -81,7 +81,7 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1); // todo: allow for more than 2 levels, 
+        SceneManager.LoadScene("Staircase"); // todo: allow for more than 2 levels, 
     }
 
     private void RespondToThrustInput()
@@ -116,13 +116,13 @@ public class Rocket : MonoBehaviour
 
         rigidBody.freezeRotation = true; // take manual control of rotation, suspend physics
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             
             transform.Rotate(Vector3.forward * rotationThisFrame); // transform is a method that Unity provides us
 
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
