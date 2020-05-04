@@ -12,6 +12,7 @@ public class Rocket : MonoBehaviour
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] float mainThrust = 1750f;
     [SerializeField] float levelLoadDelay = 2f;
+    bool collisionsDisabled = false;
 
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip obstacleCollision;
@@ -32,11 +33,16 @@ public class Rocket : MonoBehaviour
             RespondToThrustInput();
             RespondToRotateInput();
         }
+        if (Debug.isDebugBuild) // !! this ensures if we turn off development build when building, debug keys won't work!
+        {
+            ToggleCollisions();
+            SkipLevel();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) { return; } // function stops here if dead = ignore collisions when dead
+        if (state != State.Alive || collisionsDisabled) { return; } // function stops here if dead or debugging = ignore collisions when dead
 
         switch (collision.gameObject.tag)
         {
@@ -87,6 +93,22 @@ public class Rocket : MonoBehaviour
         else
         {
             audioSource.Stop();
+        }
+    }
+
+    private void ToggleCollisions()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionsDisabled = !collisionsDisabled; // sets collisionsDisabled to the opposite of its value
+        }
+    }
+
+    private void SkipLevel()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextScene();
         }
     }
 
