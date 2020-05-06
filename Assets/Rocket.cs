@@ -6,13 +6,12 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
 
-    enum State { Alive, Dying, Transcending };
-    State state = State.Alive; // use debug mode to expose this in Unity Inspector
+    bool isTransitioning = false;
+    bool collisionsDisabled = false;
 
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] float mainThrust = 1750f;
     [SerializeField] float levelLoadDelay = 2f;
-    bool collisionsDisabled = false;
 
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip obstacleCollision;
@@ -28,7 +27,7 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (state == State.Alive)
+        if (!isTransitioning)
         {
             RespondToThrustInput();
             RespondToRotateInput();
@@ -42,7 +41,7 @@ public class Rocket : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive || collisionsDisabled) { return; } // function stops here if dead or debugging = ignore collisions when dead
+        if (isTransitioning || collisionsDisabled) { return; } // function stops here if dead or debugging = ignore collisions when dead
 
         switch (collision.gameObject.tag)
         {
@@ -60,7 +59,7 @@ public class Rocket : MonoBehaviour
 
     private void StartDeathSequence()
     {
-        state = State.Dying;
+        isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(obstacleCollision);
         Invoke("HandleDeath", levelLoadDelay);
@@ -68,7 +67,7 @@ public class Rocket : MonoBehaviour
 
     private void StartSuccessSequence()
     {
-        state = State.Transcending;
+        isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(levelCompleted);
         Invoke("LoadNextScene", levelLoadDelay);
@@ -104,8 +103,13 @@ public class Rocket : MonoBehaviour
         }
         else
         {
-            audioSource.Stop();
+            StopApplyingThrust();
         }
+    }
+
+    private void StopApplyingThrust()
+    {
+        audioSource.Stop();
     }
 
     private void ToggleCollisions()
@@ -137,9 +141,9 @@ public class Rocket : MonoBehaviour
 
     private void RespondToRotateInput()
     {
-        float rotationThisFrame = rotationThrust * Time.deltaTime;
+        rigidBody.angularVelocity = Vector3.zero; // remove rotation due to physics
 
-        rigidBody.freezeRotation = true; // take manual control of rotation, suspend physics
+        float rotationThisFrame = rotationThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
@@ -151,7 +155,5 @@ public class Rocket : MonoBehaviour
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-
-        rigidBody.freezeRotation = false; // resume physics control of rotation
     }
 }
